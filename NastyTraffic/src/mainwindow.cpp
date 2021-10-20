@@ -11,9 +11,14 @@
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    traffic = new NastyTraffic();
+    for (auto iter = traffic->devices.begin(); iter != traffic->devices.end(); iter++) {
+        ui->devicesBox->addItem(QString::fromStdString((*iter)->description));
+    }
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+    delete traffic;
 }
 

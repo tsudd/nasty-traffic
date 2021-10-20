@@ -563,3 +563,4 @@ CTestTestfile.cmake
 _deps
 
 cmake-build-debug-mingw
+cmake-build-debug

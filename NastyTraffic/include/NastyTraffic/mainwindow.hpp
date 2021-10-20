@@ -6,6 +6,8 @@
 #define SNIFFER_MAINWINDOW_H
 
 #include <QWidget>
+#include <QString>
+#include "nastytraffic.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,10 +18,10 @@ class MainWindow : public QWidget {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-
     ~MainWindow() override;
 
 private:
+    NastyTraffic* traffic;
     Ui::MainWindow *ui;
 };
 
