@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <list>
+#include <vector>
 
 struct device {
     std::string name;
@@ -10,4 +10,5 @@ struct device {
 };
 
 int get_devices_amount();
-void get_devices_info(int& amount, std::list<device*>& devices);
+void get_devices_info(int& amount, std::vector<device*>& devices);
+void read_device_live(const char* name, int& packet, bool& flag);

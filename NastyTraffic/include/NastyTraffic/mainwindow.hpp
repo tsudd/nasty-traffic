@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QString>
 #include "nastytraffic.hpp"
+#include <thread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,7 +21,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+public slots:
+    void selectDevice(int index);
+    void startReading();
+    void endReading();
 private:
+    std::thread* dumping;
+    std::thread* upd;
+    int packet_len;
+    bool is_reading = false;
     NastyTraffic* traffic;
     Ui::MainWindow *ui;
 };

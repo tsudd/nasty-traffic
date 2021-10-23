@@ -18,3 +18,11 @@ NastyTraffic::NastyTraffic() {
 NastyTraffic::~NastyTraffic() {
     devices.clear();
 }
+
+void NastyTraffic::set_device(int number) {
+    selected_device = number;
+}
+
+void NastyTraffic::read_device(int &info, bool& unstop_condition) {
+    read_device_live(devices[selected_device]->name.c_str(), info, unstop_condition);
+}
