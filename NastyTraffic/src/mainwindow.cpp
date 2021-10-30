@@ -19,49 +19,38 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    QObject::connect(&ui->devicesBox, &QComboBox::currentIndexChanged, )
     connect((ui->devicesBox), &QComboBox::currentIndexChanged, this, &MainWindow::selectDevice);
-    connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startReading);
-    connect(ui->endButton, &QPushButton::clicked, this, &MainWindow::endReading);
-//    connect(ui->packetsLabel, &QLabel::)
-
-    ui->endButton->setDisabled(true);
-    ui->packetsLabel->setText("0");
+    connect(ui->processButton, &QPushButton::clicked, this, &MainWindow::toggleProcess);
 }
 
 void MainWindow::selectDevice(int index) {
     traffic->set_device(index);
 }
 
-void MainWindow::startReading() {
-    is_reading = true;
-    packet_len = 0;
+void MainWindow::toggleProcess() {
+    if (is_reading) {
+        is_reading = false;
+        ui->processButton->setText("Start");
 
-    ui->endButton->setDisabled(false);
-    ui->startButton->setDisabled(true);
+        dumping->detach();
+        upd->detach();
 
-    dumping = new std::thread(&NastyTraffic::read_device, traffic, std::ref(packet_len), std::ref(is_reading));
+        delete dumping;
+        delete upd;
+    } else {
+        is_reading = true;
+        packet_len = 0;
+        ui->processButton->setText("Stop");
 
-    upd = new std::thread([&]() {
-        while(is_reading) {
-            ui->packetsLabel->setText(QString::number(packet_len));
+        dumping = new std::thread(&NastyTraffic::read_device, traffic, std::ref(packet_len), std::ref(is_reading));
+
+        upd = new std::thread([&]() {
+            while(is_reading) {
+                ui->packagesIndicator->setText(QString::number(packet_len));
 //            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    });
+            }
+        });
+    }
 }
-
-void MainWindow::endReading() {
-    is_reading = false;
-    ui->endButton->setDisabled(true);
-    ui->startButton->setDisabled(false);
-
-    ui->packetsLabel->setText(QString::number(0));
-
-    dumping->detach();
-    upd->detach();
-
-    delete dumping;
-    delete upd;
-}
-
 
 MainWindow::~MainWindow() {
     delete ui;

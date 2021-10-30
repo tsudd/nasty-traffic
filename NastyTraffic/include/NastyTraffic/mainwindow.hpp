@@ -23,8 +23,7 @@ public:
 
 public slots:
     void selectDevice(int index);
-    void startReading();
-    void endReading();
+    void toggleProcess();
 private:
     std::thread* dumping;
     std::thread* upd;
