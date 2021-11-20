@@ -5,9 +5,11 @@
 #ifndef SNIFFER_MAINWINDOW_H
 #define SNIFFER_MAINWINDOW_H
 
+#define APP_NAME "NastyTraffic"
 #include <QWidget>
 #include <QString>
-#include "nastytraffic.hpp"
+#include <QTreeWidgetItem>
+#include "packetorchestrator.hpp"
 #include <thread>
 
 QT_BEGIN_NAMESPACE
@@ -22,15 +24,21 @@ public:
     ~MainWindow() override;
 
 public slots:
-    void selectDevice(int index);
-    void toggleProcess();
+    void select_device(int index);
+    void toggle_process();
+    void clear_widgets();
 private:
     std::thread* dumping;
     std::thread* upd;
-    int packet_len;
+    int sniffed_packets = 0;
     bool is_reading = false;
-    NastyTraffic* traffic;
+    PacketOrchestrator* traffic;
     Ui::MainWindow *ui;
+    void closeEvent(QCloseEvent *event) override;
+
+    QTreeWidgetItem* packetModel;
+
+    void show_packets();
 };
 
 

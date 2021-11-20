@@ -10,16 +10,18 @@
 class NastyTraffic {
 public:
     int device_amount = 0;
-    std::vector<device*> devices;
+    std::vector<Device*> devices;
     NastyTraffic();
     ~NastyTraffic();
-    int get_device_amount();
     void get_device_info();
-    void read_device(int& info, bool& unstop_condition);
+    void read_device(bool& unstop_condition);
     void set_device(int number);
-
+    PacketInfo* get_packet(const int num);
+    int get_sniffed_packets_amount();
+    void clear_packets();
 private:
     int selected_device = 0;
+    std::vector<PacketInfo*> packets = std::vector<PacketInfo*>();
 };
 
 

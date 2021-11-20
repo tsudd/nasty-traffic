@@ -8,4 +8,5 @@ create_module(
         DEPENDENCIES
             Packet
             wpcap
+            wsock32
 )

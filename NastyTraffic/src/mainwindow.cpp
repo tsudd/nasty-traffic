@@ -8,25 +8,30 @@
 #include "ui_MainWindow.h"
 
 #include <chrono>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    traffic = new NastyTraffic();
-    for (auto iter = traffic->devices.begin(); iter != traffic->devices.end(); iter++) {
-        ui->devicesBox->addItem(QString::fromStdString((*iter)->description));
-    }
+//    auto sniffer = new NastyTraffic();
+    traffic = new PacketOrchestrator();
+    ui->devicesBox->addItems(QStringList(traffic->get_devices_names()));
 
 //    QObject::connect(&ui->devicesBox, &QComboBox::currentIndexChanged, )
-    connect((ui->devicesBox), &QComboBox::currentIndexChanged, this, &MainWindow::selectDevice);
-    connect(ui->processButton, &QPushButton::clicked, this, &MainWindow::toggleProcess);
+    connect((ui->devicesBox), &QComboBox::currentIndexChanged, this, &MainWindow::select_device);
+    connect(ui->processButton, &QPushButton::clicked, this, &MainWindow::toggle_process);
+    packetModel = ui->treeView->invisibleRootItem();
 }
 
-void MainWindow::selectDevice(int index) {
+void MainWindow::select_device(int index) {
     traffic->set_device(index);
+    if (is_reading) {
+        toggle_process();
+    }
 }
 
-void MainWindow::toggleProcess() {
+void MainWindow::toggle_process() {
     if (is_reading) {
         is_reading = false;
         ui->processButton->setText("Start");
@@ -38,26 +43,64 @@ void MainWindow::toggleProcess() {
         delete upd;
     } else {
         is_reading = true;
-        packet_len = 0;
         ui->processButton->setText("Stop");
 
-        dumping = new std::thread(&NastyTraffic::read_device, traffic, std::ref(packet_len), std::ref(is_reading));
+        clear_widgets();
+
+        dumping = new std::thread(&PacketOrchestrator::read_device_live, traffic, std::ref(is_reading));
 
         upd = new std::thread([&]() {
             while(is_reading) {
-                ui->packagesIndicator->setText(QString::number(packet_len));
-//            std::this_thread::sleep_for(std::chrono::seconds(1));
+//                ui->packagesIndicator->setText(QString::number(packet_len));
+            show_packets();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         });
     }
 }
 
 MainWindow::~MainWindow() {
-    delete ui;
-    delete traffic;
+    is_reading = false;
     dumping->detach();
     upd->detach();
+    delete ui;
+    delete traffic;
     delete upd;
     delete dumping;
 }
+
+void MainWindow::clear_widgets() {
+    ui->treeView->clearMask();
+}
+
+void MainWindow::show_packets() {
+    auto packets_amount = traffic->get_sniffed_packets_amount();
+    auto packets = 0;
+    if (packets_amount == 0) {
+        return;
+    }
+    for (int i = sniffed_packets; i < packets_amount; i++) {
+        packetModel->insertChild(sniffed_packets, traffic->get_packet_item(i));
+        packets++;
+    }
+    sniffed_packets = packets;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, QString(APP_NAME),
+                                                                tr("Are you sure?\n"),
+                                                                QMessageBox::Cancel | QMessageBox::Yes,
+                                                                QMessageBox::Yes);
+    if (resBtn != QMessageBox::Yes) {
+        event->ignore();
+    } else {
+        is_reading = false;
+        if (dumping)
+            dumping->detach();
+        if (upd)
+            upd->detach();
+        event->accept();
+    }
+}
+
 

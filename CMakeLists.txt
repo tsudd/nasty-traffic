@@ -5,6 +5,7 @@ include(cmake/main.cmake)
 # pcap linking
 add_library(wpcap IMPORTED SHARED )
 add_library(Packet IMPORTED SHARED)
+link_libraries(ws2_32 wsock32)
 set_property(TARGET wpcap PROPERTY IMPORTED_LOCATION "C:/Windows/System32/Npcap/wpcap.dll")
 set_property(TARGET Packet PROPERTY IMPORTED_LOCATION "C:/Windows/System32/Npcap/Packet.dll")
 
