@@ -216,6 +216,7 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
 
     pcap_freecode(&fp);
     pcap_close(handle);
+//    packets.clear();
 }
 
 PacketInfo::~PacketInfo() {

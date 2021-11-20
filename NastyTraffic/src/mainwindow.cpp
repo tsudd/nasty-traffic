@@ -36,15 +36,15 @@ void MainWindow::toggle_process() {
         is_reading = false;
         ui->processButton->setText("Start");
 
-        dumping->detach();
-        upd->detach();
+        dumping->join();
+        upd->join();
 
         delete dumping;
         delete upd;
     } else {
         is_reading = true;
         ui->processButton->setText("Stop");
-
+        sniffed_packets = 0;
         clear_widgets();
 
         dumping = new std::thread(&PacketOrchestrator::read_device_live, traffic, std::ref(is_reading));
@@ -61,12 +61,13 @@ void MainWindow::toggle_process() {
 
 MainWindow::~MainWindow() {
     is_reading = false;
-    dumping->detach();
-    upd->detach();
-    delete ui;
+//    dumping;
+//    upd->detach();
+//    dumping->join();
+//    delete upd;
+//    delete dumping;
     delete traffic;
-    delete upd;
-    delete dumping;
+    delete ui;
 }
 
 void MainWindow::clear_widgets() {
@@ -95,10 +96,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
     } else {
         is_reading = false;
-        if (dumping)
-            dumping->detach();
-        if (upd)
-            upd->detach();
+//        if (dumping)
+//            dumping->detach();
+//        if (upd)
+//            upd->detach();
         event->accept();
     }
 }

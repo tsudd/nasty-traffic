@@ -14,6 +14,7 @@ NastyTraffic::NastyTraffic() {
 }
 NastyTraffic::~NastyTraffic() {
     devices.clear();
+    packets.clear();
 }
 
 void NastyTraffic::set_device(int number) {
