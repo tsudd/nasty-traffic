@@ -16,6 +16,7 @@ public:
     void get_device_info();
     void read_device(bool& unstop_condition);
     void set_device(int number);
+    bool is_addr_destination(const char* addr);
     PacketInfo* get_packet(const int num);
     int get_sniffed_packets_amount();
     void clear_packets();

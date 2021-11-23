@@ -54,7 +54,7 @@
          <item>
           <widget class="QLabel" name="statusIndicator">
            <property name="text">
-            <string>TextLabel</string>
+            <string>Stopped</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -146,6 +146,9 @@
          </item>
          <item>
           <widget class="QGraphicsView" name="downloadGraph"/>
+         </item>
+         <item>
+          <widget class="QGraphicsView" name="packagesView"/>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">

@@ -68,6 +68,8 @@ struct sniff_tcp {
     u_short th_urp;                 /* urgent pointer */
 };
 
+char* get_ip(const sockaddr* addr);
+
 void get_devices_info(int& amount, std::vector<Device*>& devices) {
     pcap_if_t *alldevs;
     pcap_if_t *d;
@@ -79,17 +81,39 @@ void get_devices_info(int& amount, std::vector<Device*>& devices) {
     {
         return;
     }
-
+    char* ip;
     for(d=alldevs; d; d=d->next)
     {
         i++;
         dev = new Device();
         dev->number = i;
         dev->name = std::string(d->name);
+        if (d->addresses) {
+            for (auto addrs = d->addresses; addrs; addrs = addrs->next) {
+                ip = get_ip(addrs->addr);
+                if (ip) {
+                    dev->ip_net = new char[strlen(ip) + 1];
+                    strcpy(dev->ip_net, ip);
+                    break;
+                }
+            }
+        }
         if (d->description) dev->description = std::string(d->description);
         devices.push_back(dev);
     }
     amount = i;
+}
+
+char* get_ip(const sockaddr* addr) {
+    if (!addr) {
+        return NULL;
+    }
+    if (addr->sa_family == AF_INET) {
+        sockaddr_in *addr_in = (sockaddr_in*)addr;
+        return inet_ntoa(addr_in->sin_addr);
+    } else {
+        return NULL;
+    }
 }
 
 void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const bool& flag, int port = -1) {
@@ -158,8 +182,7 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
             continue;
         }
 
-        sprintf(packet->ip_src, "%s", inet_ntoa(ip->ip_src));
-        sprintf(packet->ip_dst, "%s", inet_ntoa(ip->ip_dst));
+
         // protocol type
         switch(ip->ip_p) {
             case IPPROTO_TCP:
@@ -185,11 +208,13 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
 
         count++;
 
+        sprintf(packet->ip_src, "%s", inet_ntoa(ip->ip_src));
+        sprintf(packet->ip_dst, "%s", inet_ntoa(ip->ip_dst));
         packet->number = count;
 
         rawtime = header->ts.tv_sec;
         timeinfo=localtime(&rawtime);
-        strftime(packet->timestamp, 26, "%Y-%m-%d %H:%M:%S", timeinfo);
+        strftime(packet->timestamp, 26, "%H:%M:%S %Y-%m-%d", timeinfo);
 
         tcp = (sniff_tcp*)(pkt_data + SIZE_ETHERNET + size_ip);
         size_tcp = TH_OFF(tcp)*4;
@@ -219,6 +244,11 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
 //    packets.clear();
 }
 
+//Device::~Device() {
+//    delete this->ip_net;
+//    delete this->next;
+//}
+
 PacketInfo::~PacketInfo() {
     delete this->ip_src;
     delete this->ip_dst;
@@ -230,8 +260,8 @@ PacketInfo::~PacketInfo() {
 }
 
 PacketInfo::PacketInfo() {
-    this->ip_src = new char[25];
-    this->ip_dst = new char[25];
+    this->ip_src = new char[30];
+    this->ip_dst = new char[30];
     this->dport = new char[5];
     this->sport = new char[5];
 //    this->payload = new char[100];
@@ -239,43 +269,43 @@ PacketInfo::PacketInfo() {
     this->timestamp = new char[26];
 }
 
-std::string PacketInfo::get_src_ip_info() {
+std::string PacketInfo::get_src_ip_info() const {
     std::string str = IPSRC_LBL;
     str += this->ip_src;
     return str;
 }
 
-std::string PacketInfo::get_dst_ip_info() {
+std::string PacketInfo::get_dst_ip_info() const {
     std::string str = IPDST_LBL;
     str += this->ip_dst;
     return str;
 }
 
-std::string PacketInfo::get_src_port_info() {
+std::string PacketInfo::get_src_port_info() const {
     std::string str = SRC_PORT_LBL;
     str += this->sport;
     return str;
 }
 
-std::string PacketInfo::get_dst_port_info() {
+std::string PacketInfo::get_dst_port_info() const {
     std::string str = DST_PORT_LBL;
     str += this->dport;
     return str;
 }
 
-std::string PacketInfo::get_prtl_info() {
+std::string PacketInfo::get_prtl_info() const {
     std::string str = PROTOCOL_LBL;
     str += this->protocol;
     return str;
 }
 
-std::string PacketInfo::get_pl_size_info() {
+std::string PacketInfo::get_pl_size_info() const {
     std::string str = PLSIZE_LBL;
     str += std::to_string(this->size_payload);
     return str;
 }
 
-std::string PacketInfo::get_timetamp() {
+std::string PacketInfo::get_timetamp() const {
     auto str = std::string(this->timestamp);
     return str;
 }

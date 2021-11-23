@@ -13,11 +13,15 @@ public:
     void set_device(const int number);
     void read_device_live(bool& unstop_condition);
     int get_sniffed_packets_amount();
-    QTreeWidgetItem* get_packet_item(const int num);
-    void clear_data();
+    const PacketInfo* get_packet(const int num) const;
+    bool is_packet_received(const PacketInfo* packet);
+    QTreeWidgetItem* get_packet_item(const int num) const;
+    QTreeWidgetItem* get_packet_item(const PacketInfo* packet) const;
+    void clear_packets();
     QList<QString> get_devices_names();
+    int get_packet_size(const int num);
 private:
     NastyTraffic* traffic;
-    QStringList convert_packet_fields(std::string field);
+    QStringList convert_packet_fields(std::string field) const;
 };
 #endif //NASTYTRAFFIC_PACKETORCHESTRATOR_H

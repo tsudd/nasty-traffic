@@ -5,8 +5,11 @@
 struct Device {
     std::string name;
     int number;
+    char* ip_net = NULL;
     std::string description;
     Device* next;
+
+//    ~Device();
 };
 
 struct PacketInfo {
@@ -22,14 +25,14 @@ struct PacketInfo {
 
     PacketInfo();
     ~PacketInfo();
-    std::string get_src_ip_info();
-    std::string get_dst_ip_info();
-    std::string get_src_port_info();
-    std::string get_dst_port_info();
-    std::string get_prtl_info();
+    std::string get_src_ip_info() const;
+    std::string get_dst_ip_info() const;
+    std::string get_src_port_info() const;
+    std::string get_dst_port_info() const;
+    std::string get_prtl_info() const;
 //    std::string get_pl_info();
-    std::string get_pl_size_info();
-    std::string get_timetamp();
+    std::string get_pl_size_info() const;
+    std::string get_timetamp() const;
 };
 
 void get_devices_info(int& amount, std::vector<Device*>& devices);

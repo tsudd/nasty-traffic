@@ -11,6 +11,7 @@
 #include <QTreeWidgetItem>
 #include "packetorchestrator.hpp"
 #include <thread>
+#include <chrono>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,19 +27,21 @@ public:
 public slots:
     void select_device(int index);
     void toggle_process();
-    void clear_widgets();
 private:
     std::thread* dumping;
     std::thread* upd;
+
     int sniffed_packets = 0;
     bool is_reading = false;
     PacketOrchestrator* traffic;
     Ui::MainWindow *ui;
     void closeEvent(QCloseEvent *event) override;
+    void clear();
 
     QTreeWidgetItem* packetModel;
 
-    void show_packets();
+    void show_packets(const float duration);
+    QString convert_bytes_to_speed(const long long bytes_amount, const float time);
 };
 
 
