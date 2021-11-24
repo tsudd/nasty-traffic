@@ -153,9 +153,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QLabel" name="seedLabel">
+            <widget class="QLabel" name="uploadLabel">
              <property name="text">
-              <string>Speed</string>
+              <string>Upload</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -163,7 +163,24 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="seedIndicator">
+            <widget class="QLabel" name="uploadIndicator">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="downloadLabel">
+             <property name="text">
+              <string>Download</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="downloadIndicator">
              <property name="text">
               <string>0</string>
              </property>

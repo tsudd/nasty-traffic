@@ -36,8 +36,8 @@ void MainWindow::toggle_process() {
         ui->processButton->setText("Start");
         ui->statusIndicator->setText("Stopped");
 
-        dumping->join();
-        upd->join();
+        dumping->detach();
+        upd->detach();
 
         delete dumping;
         delete upd;
@@ -56,8 +56,9 @@ void MainWindow::toggle_process() {
             while(is_reading) {
 //                ui->packagesIndicator->setText(QString::number(packet_len));
             auto tm = std::chrono::high_resolution_clock::now();
+            int packets = traffic->get_sniffed_packets_amount();
             std::chrono::duration<float> duration = tm - start;
-            show_packets(duration.count());
+            show_packets(duration.count(), packets);
             std::this_thread::sleep_for(std::chrono::seconds(1));
             start = tm;
             }
@@ -81,24 +82,27 @@ void MainWindow::clear() {
     traffic->clear_packets();
 }
 
-void MainWindow::show_packets(const float duration) {
-    auto packets_amount = traffic->get_sniffed_packets_amount();
-    auto packets = 0;
-    long long transfered = 0;
-    if (packets_amount == 0) {
+void MainWindow::show_packets(const float duration, const int amount) {
+    if (amount == 0) {
         return;
     }
-    for (int i = sniffed_packets; i < packets_amount; i++) {
+    int packets = 0;
+    long long downloaded = 0;
+    long long uploaded = 0;
+    for (int i = sniffed_packets; i < amount; i++) {
         auto pckt = traffic->get_packet(i);
         packetModel->insertChild(sniffed_packets, traffic->get_packet_item(pckt));
         if (traffic->is_packet_received(pckt)) {
-            transfered += traffic->get_packet_size(i);
+            downloaded += pckt->size_payload;
+        } else {
+            uploaded += pckt->size_payload;
         }
         packets++;
     }
     ui->packagesIndicator->setText(QString::number(packets));
-    ui->seedIndicator->setText(convert_bytes_to_speed(transfered, duration));
-    sniffed_packets = packets;
+    ui->downloadIndicator->setText(convert_bytes_to_speed(downloaded, duration));
+    ui->uploadIndicator->setText(convert_bytes_to_speed(uploaded, duration));
+    sniffed_packets += packets;
 }
 
 QString MainWindow::convert_bytes_to_speed(const long long bytes_amount, const float time) {
@@ -113,10 +117,10 @@ QString MainWindow::convert_bytes_to_speed(const long long bytes_amount, const f
         speed /= 1024.0;
         division_times++;
     } while (speed > 1000);
-    if (speed > 100) {
-        speed *= 1024;
-        division_times--;
-    }
+//    if (speed > 100) {
+//        speed *= 1024;
+//        division_times--;
+//    }
     auto speed_text = QString::number(round(speed * 10)/10);
     switch (division_times) {
         case 2:

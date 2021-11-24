@@ -40,7 +40,7 @@ private:
 
     QTreeWidgetItem* packetModel;
 
-    void show_packets(const float duration);
+    void show_packets(const float duration, const int amount);
     QString convert_bytes_to_speed(const long long bytes_amount, const float time);
 };
 
