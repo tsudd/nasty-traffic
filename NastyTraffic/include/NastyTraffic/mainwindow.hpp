@@ -6,12 +6,15 @@
 #define SNIFFER_MAINWINDOW_H
 
 #define APP_NAME "NastyTraffic"
+
 #include <QWidget>
 #include <QString>
 #include <QTreeWidgetItem>
 #include "packetorchestrator.hpp"
 #include <thread>
 #include <chrono>
+#include <QGraphicsScene>
+#include <QLineSeries>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,6 +33,10 @@ public slots:
 private:
     std::thread* dumping;
     std::thread* upd;
+
+    QGraphicsScene* downScene;
+//    QLineSeries* seris = new QLineSeries();
+
 
     int sniffed_packets = 0;
     bool is_reading = false;

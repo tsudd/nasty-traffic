@@ -4,5 +4,6 @@ create_module(
         DESCRIPTION "App with UI for traffic observing"
         DEPENDENCIES
             pcapworker
-            Qt6::Widgets
+            Qt5::Widgets
+            Qt5::Charts
 )

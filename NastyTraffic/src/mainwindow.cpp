@@ -9,6 +9,7 @@
 
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent) :
         QWidget(parent), ui(new Ui::MainWindow) {
@@ -17,9 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
     traffic = new PacketOrchestrator();
     ui->devicesBox->addItems(QStringList(traffic->get_devices_names()));
 
+    downScene = new QGraphicsScene();
+//    QLineSeries* series = new QLineSeries();
+//    series->add(0, 6);
+//    series->add(2, 4);
+//    ui->downloadGraph->setScene(downloadPlt);
+
 //    QObject::connect(&ui->devicesBox, &QComboBox::currentIndexChanged, )
-    connect((ui->devicesBox), &QComboBox::currentIndexChanged, this, &MainWindow::select_device);
-    connect(ui->processButton, &QPushButton::clicked, this, &MainWindow::toggle_process);
+    connect((ui->devicesBox), SIGNAL(currentIndexChanged(int)), this, SLOT(select_device(int)));
+    connect(ui->processButton, SIGNAL(clicked()), this, SLOT(toggle_process()));
     packetModel = ui->treeView->invisibleRootItem();
 }
 

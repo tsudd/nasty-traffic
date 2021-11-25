@@ -24,8 +24,9 @@ pkg_check_modules(libpcap REQUIRED IMPORTED_TARGET libpcap)
 set(CMAKE_CXX_STANDARD 14)
 # Qt adding
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_PREFIX_PATH "C:/Qt/6.2.0/mingw81_64")
-find_package(Qt6Widgets REQUIRED)
+set(CMAKE_PREFIX_PATH "C:/msys64/mingw64/")
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Charts REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
