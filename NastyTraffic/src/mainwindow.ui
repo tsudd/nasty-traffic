@@ -120,7 +120,7 @@
          <property name="spacing">
           <number>4</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QGroupBox" name="control">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="leftMargin">
@@ -135,7 +135,7 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
+            <item alignment="Qt::AlignTop">
              <widget class="QLabel" name="portLabel">
               <property name="minimumSize">
                <size>
@@ -151,7 +151,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignTop">
              <widget class="QLineEdit" name="lineEdit"/>
             </item>
             <item>
@@ -174,12 +174,13 @@
           </widget>
          </item>
          <item>
-          <widget class="QGraphicsView" name="downloadGraph"/>
+          <layout class="QGridLayout" name="graphGrid">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
+          </layout>
          </item>
-         <item>
-          <widget class="QGraphicsView" name="uploadGraph"/>
-         </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QGroupBox" name="indicators">
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <property name="spacing">
@@ -200,7 +201,7 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="uploadLabel">
               <property name="text">
                <string>Upload</string>
@@ -210,14 +211,14 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="uploadIndicator">
               <property name="text">
                <string>0</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="downloadLabel">
               <property name="text">
                <string>Download</string>
@@ -227,14 +228,14 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="downloadIndicator">
               <property name="text">
                <string>0</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="packagesLabel">
               <property name="text">
                <string>Packages</string>
@@ -244,7 +245,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignBottom">
              <widget class="QLabel" name="packagesIndicator">
               <property name="text">
                <string>0</string>
