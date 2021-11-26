@@ -6,4 +6,5 @@ create_module(
             pcapworker
             Qt5::Widgets
             Qt5::Charts
+            Qt5::PrintSupport
 )

@@ -27,6 +27,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_PREFIX_PATH "C:/msys64/mingw64/")
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Charts REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
