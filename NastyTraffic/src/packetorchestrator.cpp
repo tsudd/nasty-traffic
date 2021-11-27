@@ -20,8 +20,8 @@ void PacketOrchestrator::set_device(const int number) {
     traffic->set_device(number);
 }
 
-void PacketOrchestrator::read_device_live(bool &unstop_condition) {
-    traffic->read_device(unstop_condition);
+void PacketOrchestrator::read_device_live(bool &unstop_condition, const int port) {
+    traffic->read_device(unstop_condition, port);
 }
 
 int PacketOrchestrator::get_sniffed_packets_amount() {

@@ -123,6 +123,7 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
 
     char* filter_exp = NULL;
     struct bpf_program fp;
+    bool bpf_compiled = false;
     bpf_u_int32 mask;
     bpf_u_int32 net;
 
@@ -144,8 +145,9 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
         // TODO: make exact exception
         throw std::exception();
     }
-    if (port > 0) {
-        sprintf(filter_exp, "ip port %d", port);
+    if (port >= 0) {
+        filter_exp = new char[25];
+        sprintf(filter_exp, "dst port %d", port);
         if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
             // TODO: make exact exception
             throw std::exception();
@@ -155,6 +157,8 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
             // TODO: make exact exception
             throw std::exception();
         }
+        delete filter_exp;
+        bpf_compiled = true;
     }
     time_t rawtime;
     tm* timeinfo;
@@ -239,7 +243,9 @@ void read_device_live(const char* dev, std::vector<PacketInfo*>& packets, const 
         throw std::exception();
     }
 
-    pcap_freecode(&fp);
+    if (bpf_compiled) {
+        pcap_freecode(&fp);
+    }
     pcap_close(handle);
 //    packets.clear();
 }

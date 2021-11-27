@@ -51,11 +51,13 @@ private:
 
     double time_passed = 0;
     int sniffed_packets = 0;
+    int selected_port = -1;
     bool is_reading = false;
     PacketOrchestrator* traffic;
     Ui::MainWindow *ui;
     void addPoint(const double down, const double up, const double packets);
     void closeEvent(QCloseEvent *event) override;
+    bool get_inputted_port();
     void clear();
 
     QTreeWidgetItem* packetModel;

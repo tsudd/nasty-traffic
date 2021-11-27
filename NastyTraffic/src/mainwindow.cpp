@@ -8,8 +8,6 @@
 #include "mainwindow.hpp"
 #include "ui_MainWindow.h"
 
-#include <QMessageBox>
-#include <QCloseEvent>
 #include <cmath>
 #include <chrono>
 
@@ -112,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect((ui->devicesBox), SIGNAL(currentIndexChanged(int)), this, SLOT(select_device(int)));
     connect(ui->processButton, SIGNAL(clicked()), this, SLOT(toggle_process()));
     packetModel = ui->treeView->invisibleRootItem();
+    ui->portInput->setValidator(new QIntValidator(0, 65536, this));
 }
 
 void MainWindow::select_device(int index) {
@@ -139,9 +138,15 @@ void MainWindow::toggle_process() {
         ui->processButton->setText("Stop");
         ui->statusIndicator->setText("Sniffing...");
         sniffed_packets = 0;
+        selected_port = -1;
         clear_graphs();
 
-        dumping = new std::thread(&PacketOrchestrator::read_device_live, traffic, std::ref(is_reading));
+        if (!get_inputted_port()) {
+            toggle_process();
+            return;
+        }
+
+        dumping = new std::thread(&PacketOrchestrator::read_device_live, traffic, std::ref(is_reading), std::ref(selected_port));
 
         upd = new std::thread([&]() {
             auto start = std::chrono::steady_clock::now();
@@ -278,6 +283,28 @@ void MainWindow::clear_graphs() {
         upPnts.enqueue(0);
         keys.enqueue(0);
     }
+}
+
+bool MainWindow::get_inputted_port() {
+    if (ui->portInput->text().length() == 0) {
+        return true;
+    }
+    try {
+        selected_port = ui->portInput->text().toInt();
+    } catch (std::exception) {
+        QMessageBox::StandardButton resBtn = QMessageBox::question( this, QString(APP_NAME),
+                                        tr("Wrong port input. Would you like to proceed with no port selection?\n"),
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+        if (resBtn != QMessageBox::Yes) {
+            ui->portInput->setText("");
+            selected_port = -1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 

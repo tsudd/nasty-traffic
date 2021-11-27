@@ -11,7 +11,7 @@ public:
     explicit PacketOrchestrator(NastyTraffic* traffic_reader = nullptr);
     ~PacketOrchestrator();
     void set_device(const int number);
-    void read_device_live(bool& unstop_condition);
+    void read_device_live(bool& unstop_condition, const int port);
     int get_sniffed_packets_amount();
     const PacketInfo* get_packet(const int num) const;
     bool is_packet_received(const PacketInfo* packet);

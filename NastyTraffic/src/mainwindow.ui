@@ -152,7 +152,7 @@
              </widget>
             </item>
             <item alignment="Qt::AlignTop">
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="portInput"/>
             </item>
             <item>
              <spacer name="spacer">

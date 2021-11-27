@@ -14,7 +14,7 @@ public:
     NastyTraffic();
     ~NastyTraffic();
     void get_device_info();
-    void read_device(bool& unstop_condition);
+    void read_device(bool& unstop_condition, int port);
     void set_device(int number);
     bool is_addr_destination(const char* addr);
     PacketInfo* get_packet(const int num);
