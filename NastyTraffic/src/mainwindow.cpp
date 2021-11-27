@@ -20,51 +20,94 @@ MainWindow::MainWindow(QWidget *parent) :
     dataTimer = new QTimer();
     ui->devicesBox->addItems(QStringList(traffic->get_devices_names()));
 
-    downPlt = new QCustomPlot();
-    ui->graphGrid->addWidget(downPlt, 0, 0, 1, 1);
+    //graphs set up
+    transferPlt = new QCustomPlot();
+    ui->graphGrid->addWidget(transferPlt, 0, 0, 1, 1);
 
+    transferPlt->setInteraction(QCP::iRangeDrag, true);
+    transferPlt->axisRect()->setRangeDrag(Qt::Horizontal);
+    transferPlt->xAxis->setSubTicks(true);
 
-//    downPlt->setInteraction(QCP::iRangeZoom, true);
-    downPlt->setInteraction(QCP::iRangeDrag, true);
-    downPlt->axisRect()->setRangeDrag(Qt::Horizontal);
-//    downPlt->axisRect()->setRangeZoom(Qt::Horizontal);
-    downPlt->xAxis->setSubTicks(true);
+    transferPlt->xAxis2->setVisible(true);
+    transferPlt->yAxis2->setVisible(true);
+    transferPlt->xAxis2->setTicks(false);
+    transferPlt->yAxis2->setTicks(false);
+    transferPlt->xAxis2->setTickLabels(false);
+    transferPlt->yAxis2->setTickLabels(false);
 
-    downPlt->xAxis2->setVisible(true);
-    downPlt->yAxis2->setVisible(true);
-    downPlt->xAxis2->setTicks(false);
-    downPlt->yAxis2->setTicks(false);
-    downPlt->xAxis2->setTickLabels(false);
-    downPlt->yAxis2->setTickLabels(false);
+    transferPlt->yAxis->setTickLabelColor(QColor(Qt::red));
+    transferPlt->legend->setVisible(true);
+    transferPlt->yAxis->setRange(0, 13000);
 
-    downPlt->yAxis->setTickLabelColor(QColor(Qt::red));
-    downPlt->legend->setVisible(true);
-    downPlt->yAxis->setRange(0, 13000);
+    transferPlt->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft | Qt::AlignTop);
 
-    downPlt->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
+    transferPlt->addGraph();
+    transferPlt->graph(0)->setName("Download, KB/s");
+    QPen pen1 = QPen(QColor(40, 110, 255));
+    pen1.setWidth(3);
+    transferPlt->graph(0)->setPen(pen1);
+    transferPlt->graph(0)->setAntialiased(false);
+    transferPlt->graph(0)->setLineStyle(QCPGraph::lsLine);
 
-//    downGraph = new QCPGraph(downPlt->xAxis, downPlt->yAxis);
-//    downPlt->addPlttable
-    downPlt->addGraph();
-    downPlt->graph(0)->setName("Download, B/s");
-    downPlt->graph(0)->setPen(QPen(QColor(40, 110, 255)));
-    downPlt->graph(0)->setAntialiased(false);
-    downPlt->graph(0)->setLineStyle(QCPGraph::lsLine);
+    transferPlt->addGraph();
+    transferPlt->graph(1)->setName("Upload, KB/s");
+    QPen pen2 = QPen(QColor(255,0,0));
+    pen2.setWidth(3);
+    transferPlt->graph(1)->setPen(QPen(pen2));
+    transferPlt->graph(1)->setAntialiased(false);
+    transferPlt->graph(1)->setLineStyle(QCPGraph::lsLine);
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%m:%s");
-    downPlt->yAxis->setRange(0, 20000);
-    downPlt->xAxis->setTicker(timeTicker);
-    downPlt->axisRect()->setupFullAxesBox();
+    transferPlt->yAxis->setRange(0, 15000);
+    transferPlt->xAxis->setTicker(timeTicker);
+    transferPlt->axisRect()->setupFullAxesBox();
 
-    connect(downPlt->xAxis, SIGNAL(rangeChanged(QCPRange)),
-            downPlt->xAxis2, SLOT(setRange(QCPRange)));
+    connect(transferPlt->xAxis, SIGNAL(rangeChanged(QCPRange)),
+            transferPlt->xAxis2, SLOT(setRange(QCPRange)));
 
-    connect(downPlt->yAxis, SIGNAL(rangeChanged(QCPRange)),
-            downPlt->yAxis2, SLOT(setRange(QCPRange)));
+    connect(transferPlt->yAxis, SIGNAL(rangeChanged(QCPRange)),
+            transferPlt->yAxis2, SLOT(setRange(QCPRange)));
 
-    connect(dataTimer, SIGNAL(timeout()), this, SLOT(download_range_changed()));
-//    downPlt->graph(0)->setData(time, downPoints);
+    connect(dataTimer, SIGNAL(timeout()), this, SLOT(graph_update_tick()));
+
+    pcktPlt = new QCustomPlot();
+    ui->graphGrid->addWidget(pcktPlt, 1, 0, 1, 1);
+
+    pcktPlt->setInteraction(QCP::iRangeDrag, true);
+    pcktPlt->axisRect()->setRangeDrag(Qt::Horizontal);
+    pcktPlt->xAxis->setSubTicks(true);
+
+    pcktPlt->xAxis2->setVisible(true);
+    pcktPlt->yAxis2->setVisible(true);
+    pcktPlt->xAxis2->setTicks(false);
+    pcktPlt->yAxis2->setTicks(false);
+    pcktPlt->xAxis2->setTickLabels(false);
+    pcktPlt->yAxis2->setTickLabels(false);
+
+    pcktPlt->yAxis->setTickLabelColor(QColor(Qt::red));
+    pcktPlt->legend->setVisible(true);
+    pcktPlt->yAxis->setRange(0, 13000);
+
+    pcktPlt->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft | Qt::AlignTop);
+
+    pcktPlt->addGraph();
+    pcktPlt->graph(0)->setName("Packets amount, N");
+    QPen pen3 = QPen(QColor(40, 110, 255));
+    pen3.setWidth(3);
+    pcktPlt->graph(0)->setPen(pen3);
+    pcktPlt->graph(0)->setAntialiased(false);
+    pcktPlt->graph(0)->setLineStyle(QCPGraph::lsLine);
+
+    pcktPlt->yAxis->setRange(0, 400);
+    pcktPlt->xAxis->setTicker(timeTicker);
+    pcktPlt->axisRect()->setupFullAxesBox();
+
+    connect(pcktPlt->xAxis, SIGNAL(rangeChanged(QCPRange)),
+            pcktPlt->xAxis2, SLOT(setRange(QCPRange)));
+
+    connect(pcktPlt->yAxis, SIGNAL(rangeChanged(QCPRange)),
+            pcktPlt->yAxis2, SLOT(setRange(QCPRange)));
 
     connect((ui->devicesBox), SIGNAL(currentIndexChanged(int)), this, SLOT(select_device(int)));
     connect(ui->processButton, SIGNAL(clicked()), this, SLOT(toggle_process()));
@@ -133,7 +176,7 @@ void MainWindow::show_packets(const double duration) {
     time_passed += duration;
     int amount = traffic->get_sniffed_packets_amount();
     if (amount - sniffed_packets == 0) {
-        addPoint(0);
+        addPoint(0, 0, 0);
         return;
     }
     int packets = 0;
@@ -145,11 +188,11 @@ void MainWindow::show_packets(const double duration) {
         if (traffic->is_packet_received(pckt)) {
             downloaded += pckt->size_payload / 8;
         } else {
-            uploaded += pckt->size_payload;
+            uploaded += pckt->size_payload / 8;
         }
         packets++;
     }
-    addPoint(downloaded / 1024.0 / duration);
+    addPoint(downloaded / 1024.0 / duration, uploaded / 1024.0 / duration, packets);
     ui->packagesIndicator->setText(QString::number(packets));
     ui->downloadIndicator->setText(convert_bytes_to_speed(downloaded, duration));
     ui->uploadIndicator->setText(convert_bytes_to_speed(uploaded, duration));
@@ -198,29 +241,41 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
-void MainWindow::addPoint(const double p) {
+void MainWindow::addPoint(const double down, const double up, const double packets) {
     downPnts.dequeue();
     keys.dequeue();
-    downPnts.enqueue(p);
+    upPnts.dequeue();
+    pcktPnts.dequeue();
+    upPnts.enqueue(up);
+    pcktPnts.enqueue(packets);
+    downPnts.enqueue(down);
     keys.enqueue(time_passed);
 }
 
-void MainWindow::download_range_changed() {
-    if (downPnts.isEmpty() || keys.isEmpty()) {
+void MainWindow::graph_update_tick() {
+    if (keys.isEmpty()) {
         return;
     }
-    downPlt->graph(0)->setData(keys.toVector(), downPnts.toVector());
-//    downPlt->graph(0)->rescaleValueAxis();
-    downPlt->xAxis->setRange(time_passed, 8, Qt::AlignRight);
-    downPlt->replot();
+    auto moments = keys.toVector();
+    transferPlt->graph(0)->setData(moments, downPnts.toVector());
+    transferPlt->graph(1)->setData(moments, upPnts.toVector());
+    pcktPlt->graph(0)->setData(moments, pcktPnts.toVector());
+    pcktPlt->xAxis->setRange(moments[moments.size() - 1], 8, Qt::AlignRight);
+    transferPlt->xAxis->setRange(time_passed, 8, Qt::AlignRight);
+    pcktPlt->replot();
+    transferPlt->replot();
 }
 
 void MainWindow::clear_graphs() {
     keys.clear();
     downPnts.clear();
+    upPnts.clear();
+    pcktPnts.clear();
 
     for (int i = 0; i < POINTS_AMOUNT; i++) {
         downPnts.enqueue(0);
+        pcktPnts.enqueue(0);
+        upPnts.enqueue(0);
         keys.enqueue(0);
     }
 }

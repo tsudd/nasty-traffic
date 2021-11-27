@@ -34,7 +34,7 @@ public:
 public slots:
     void select_device(int index);
     void toggle_process();
-    void download_range_changed();
+    void graph_update_tick();
     void clear_graphs();
 private:
     std::thread* dumping;
@@ -42,8 +42,11 @@ private:
 
     QTimer* dataTimer;
 
-    QCustomPlot* downPlt;
+    QCustomPlot* transferPlt;
+    QCustomPlot* pcktPlt;
     QQueue<double> downPnts;
+    QQueue<double> upPnts;
+    QQueue<double> pcktPnts;
     QQueue<double> keys;
 
     double time_passed = 0;
@@ -51,7 +54,7 @@ private:
     bool is_reading = false;
     PacketOrchestrator* traffic;
     Ui::MainWindow *ui;
-    void addPoint(const double p);
+    void addPoint(const double down, const double up, const double packets);
     void closeEvent(QCloseEvent *event) override;
     void clear();
 
